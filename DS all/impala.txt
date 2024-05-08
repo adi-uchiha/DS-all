@@ -1,0 +1,107 @@
+[cloudera@quickstart ~]$ impala-shell
+Starting Impala Shell without Kerberos authentication
+Connected to quickstart.cloudera:21000
+Server version: impalad version 2.10.0-cdh5.13.0 RELEASE (build
+2511805f1eaa991df1460276c7e9f19d819cd4e4)
+***********************************************************************************
+Welcome to the Impala shell.
+(Impala Shell v2.10.0-cdh5.13.0 (2511805) built on Wed Oct 4 10:55:37 PDT 2017)
+When pretty-printing is disabled, you can use the '--output_delimiter' flag to set
+the delimiter for fields in the same row. The default is ','.
+***********************************************************************************
+[quickstart.cloudera:21000] > SHOW DATABASES;
+Query: show DATABASES
++------------------+----------------------------------------------+
+| name | comment |
++------------------+----------------------------------------------+
+| _impala_builtins | System database for Impala builtin functions |
+| default | Default Hive database |
+| info | |
++------------------+----------------------------------------------+
+Fetched 3 row(s) in 0.10s
+[quickstart.cloudera:21000] > CREATE DATABASE mydb;
+Query: create DATABASE mydb
+Fetched 0 row(s) in 0.17s
+[quickstart.cloudera:21000] > USE mydb;
+Query: use mydb
+[quickstart.cloudera:21000] > CREATE TABLE students(roll INT, name STRING, gender STRING, dob
+DATE, gpa FLOAT);
+Query: create TABLE students(roll INT, name STRING, gender STRING, dob DATE, gpa FLOAT)
+ERROR: AnalysisException: Unsupported data type: DATE
+[quickstart.cloudera:21000] > ALTER TABLE students ADD COLUMNS (branch STRING);
+Query: alter TABLE students ADD COLUMNS (branch STRING)
+Fetched 0 row(s) in 4.31s
+[quickstart.cloudera:21000] > DESC students;
+Query: describe students
++--------+-----------+---------+
+| name | type | comment |
++--------+-----------+---------+
+| roll | int | |
+| name | string | |
+| gender | string | |
+| dob | timestamp | |
+| gpa | float | |
+| branch | string | |
++--------+-----------+---------+
+Fetched 6 row(s) in 0.12s
+ry: insert INTO students VALUES(101,'Priya','Female','1999-10-12',8.32,'IT')
+Query submitted at: 2024-04-20 20:47:43 (Coordinator: http://quickstart.cloudera:25000)
+Query progress can be monitored at:
+http://quickstart.cloudera:25000/query_plan?query_id=3f4742e2d35a6dc7:7c37d9e200000000
+Modified 1 row(s) in 0.11s
+[quickstart.cloudera:21000] > INSERT INTO students VALUES(102,'Abhijit Sharma','Male','1999-
+11-10',8.66,'Electrical'), (103, 'Amit Tripathi', 'Male', '2001-06-24',8.11,'IT');
+Query: insert INTO students VALUES(102,'Abhijit Sharma','Male','1999-11-10',8.66,'Electrical'),
+(103, 'Amit Tripathi', 'Male', '2001-06-24',8.11,'IT')
+Query submitted at: 2024-04-20 20:49:37 (Coordinator: http://quickstart.cloudera:25000)
+Query progress can be monitored at:
+http://quickstart.cloudera:25000/query_plan?query_id=3d45feda8a31084d:1254816500000000
+Modified 2 row(s) in 0.12s
+[quickstart.cloudera:21000] > SELECT * FROM students;
+Query: select * FROM students
+Query submitted at: 2024-04-20 20:49:50 (Coordinator: http://quickstart.cloudera:25000)
+Query progress can be monitored at:
+http://quickstart.cloudera:25000/query_plan?query_id=ef4831ad95afeefe:5989aae000000000
++------+----------------+--------+---------------------+-------------------+------------------
++
+| roll | name | gender | dob | gpa | branch
+|
++------+----------------+--------+---------------------+-------------------+------------------
++
+| 102 | Abhijit Sharma | Male | 1999-11-10 00:00:00 | 8.659999847412109 | Electrical
+|
+| 103 | Amit Tripathi | Male | 2001-06-24 00:00:00 | 8.109999656677246 | IT
+|
+| 101 | Ravi Kumar | Male | 1998-05-15 00:00:00 | 7.800000190734863 | Computer Science
+|
+| 101 | Priya | Female | 1999-10-12 00:00:00 | 8.319999694824219 | IT
+|
++------+----------------+--------+---------------------+-------------------+------------------
++
+Fetched 4 row(s) in 0.38s
+[quickstart.cloudera:21000] > SELECT gender, AVG(gpa) FROM students GROUP BY gender;;
+Query: select gender, AVG(gpa) FROM students GROUP BY gender
+Query submitted at: 2024-04-20 21:01:06 (Coordinator: http://quickstart.cloudera:25000)
+Query progress can be monitored at:
+http://quickstart.cloudera:25000/query_plan?query_id=32482b1564fd3a89:b8ada0a000000000
++--------+-------------------+
+| gender | avg(gpa) |
++--------+-------------------+
+| Male | 7.117499947547913 |
+| Female | 5.206666549046834 |
++--------+-------------------+
+Fetched 2 row(s) in 0.26s
+[quickstart.cloudera:21000] > SELECT branch, AVG(gpa) AS avg_gpa FROM students GROUP BY branch
+ORDER BY avg_gpa;
+Query: select branch, AVG(gpa) AS avg_gpa FROM students GROUP BY branch ORDER BY avg_gpa
+Query submitted at: 2024-04-20 21:03:22 (Coordinator: http://quickstart.cloudera:25000)
+Query progress can be monitored at:
+http://quickstart.cloudera:25000/query_plan?query_id=714e46f6e6167d46:a02e0c700000000
++------------------+-------------------+
+| branch | avg_gpa |
++------------------+-------------------+
+| Computer Science | 5.850000143051147 |
+| Electrical | 6.179999947547913 |
+| IT | 6.676666418711345 |
++------------------+-------------------+
+Fetched 3 row(s) in 0.17s
